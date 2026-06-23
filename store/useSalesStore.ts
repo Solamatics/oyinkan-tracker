@@ -30,12 +30,16 @@ export const useSalesStore = create<SalesState>((set) => ({
 
   fetchSales: async (productId, month) => {
     set({ loading: true });
-    const params = new URLSearchParams();
-    if (productId) params.set("productId", productId);
-    if (month) params.set("month", month);
-    const res = await fetch(`/api/sales?${params}`);
-    const data = await res.json();
-    set({ sales: data, loading: false });
+    try {
+      const params = new URLSearchParams();
+      if (productId) params.set("productId", productId);
+      if (month) params.set("month", month);
+      const res = await fetch(`/api/sales?${params}`);
+      const data = await res.json();
+      set({ sales: data });
+    } finally {
+      set({ loading: false });
+    }
   },
 
   addSale: async (payload) => {

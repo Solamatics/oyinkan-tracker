@@ -6,6 +6,7 @@ export interface Product {
   lowStockAlert: number;
   currentStock: number;
   createdAt: string;
+  stockMovements?: StockMovement[];
 }
 
 export interface Sale {
