@@ -6,16 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { formatNaira, formatDate, monthLabel } from "@/lib/utils";
 import { AlertTriangle } from "lucide-react";
 
-export interface ProductItem {
-  id: string;
-  name: string;
-  unit: string;
-  defaultPrice: number;
-  lowStockAlert: number;
-  currentStock: number;
-  createdAt: Date;
-}
-
 async function getDashboardData() {
   const now = new Date();
   const year = now.getFullYear();
@@ -81,7 +71,7 @@ export default async function DashboardPage() {
     totalSales: 0,
   };
 
-  const lowStock = products.filter((p: ProductItem) => p.currentStock <= p.lowStockAlert);
+  const lowStock = products.filter((p) => p.currentStock <= p.lowStockAlert);
 
   return (
     <div className="space-y-6">
