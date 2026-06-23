@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatNaira, formatDate, monthLabel } from "@/lib/utils";
 import { AlertTriangle } from "lucide-react";
 
+//dashboard data
 async function getDashboardData() {
   const now = new Date();
   const year = now.getFullYear();
@@ -80,7 +81,7 @@ export default async function DashboardPage() {
         <p className="text-sm text-muted-foreground mt-0.5">{label}</p>
       </div>
 
-      {/* Low stock alerts */}
+      {/* Low stock alerts here */}
       {lowStock.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {lowStock.map((p) => (
