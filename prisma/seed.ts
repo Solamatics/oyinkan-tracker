@@ -2,14 +2,16 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient({ adapter: new PrismaPg(process.env.DATABASE_URL!) });
+const prisma = new PrismaClient({
+  adapter: new PrismaPg(process.env.DATABASE_URL!),
+});
 
 async function main() {
   const hashed = await bcrypt.hash("admin123", 12);
   await prisma.user.upsert({
-    where: { email: "admin@biztracker.com" },
+    where: { email: "admin@oyinkantracker.com" },
     update: {},
-    create: { email: "admin@biztracker.com", password: hashed },
+    create: { email: "admin@oyinkantracker.com", password: hashed },
   });
 
   const products = [
@@ -37,7 +39,7 @@ async function main() {
     });
   }
 
-  console.log("✅ Seed complete — admin@biztracker.com / admin123");
+  console.log("✅ Seed complete — admin@oyinkantracker.com / admin123");
 }
 
 main()
