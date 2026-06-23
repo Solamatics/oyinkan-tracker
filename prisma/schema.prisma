@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  id             String          @id @default(cuid())
+  name           String          @unique
+  unit           String
+  defaultPrice   Float           @default(0)
+  lowStockAlert  Int             @default(5)
+  currentStock   Int             @default(0)
+  createdAt      DateTime        @default(now())
+  sales          Sale[]
+  stockMovements StockMovement[]
+}
+
+model Sale {
+  id        String   @id @default(cuid())
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  unitPrice Float
+  total     Float
+  note      String?
+  date      DateTime
+  createdAt DateTime @default(now())
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  category    String
+  description String?
+  amount      Float
+  date        DateTime
+  createdAt   DateTime @default(now())
+}
+
+model StockMovement {
+  id        String   @id @default(cuid())
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  type      String
+  quantity  Int
+  note      String?
+  date      DateTime @default(now())
+}
+
+model MonthlySummary {
+  id           String   @id @default(cuid())
+  year         Int
+  month        Int
+  totalRevenue Float    @default(0)
+  totalExpense Float    @default(0)
+  netProfit    Float    @default(0)
+  totalSales   Int      @default(0)
+  updatedAt    DateTime @updatedAt
+
+  @@unique([year, month])
+}
