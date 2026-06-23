@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatNaira, formatDate, monthLabel } from "@/lib/utils";
 import { AlertTriangle } from "lucide-react";
+import { Product } from "@prisma/client";
 
 async function getDashboardData() {
   const now = new Date();
@@ -71,7 +72,7 @@ export default async function DashboardPage() {
     totalSales: 0,
   };
 
-  const lowStock = products.filter((p) => p.currentStock <= p.lowStockAlert);
+  const lowStock = products.filter((p: Product) => p.currentStock <= p.lowStockAlert);
 
   return (
     <div className="space-y-6">
