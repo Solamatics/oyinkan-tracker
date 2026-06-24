@@ -96,7 +96,7 @@ export default async function DashboardPage() {
       {/* Low stock alerts here */}
       {lowStock.length > 0 && (
         <div className="flex flex-wrap gap-2">
-          {lowStock.map((p) => (
+          {lowStock.map((p: ProductItem) => (
             <div
               key={p.id}
               className="flex items-center gap-1.5 text-xs bg-amber-50 border border-amber-200 text-amber-800 rounded-md px-3 py-1.5"
@@ -190,7 +190,7 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {products.map((p) => {
+              {products.map((p: ProductItem) => {
                 const status =
                   p.currentStock === 0
                     ? "out"
