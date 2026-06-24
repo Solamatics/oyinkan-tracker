@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { MonthlyChart } from "@/components/dashboard/MonthlyChart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +7,17 @@ import { formatNaira, formatDate, monthLabel } from "@/lib/utils";
 import { AlertTriangle } from "lucide-react";
 
 
-type SaleWithProduct = Prisma.SaleGetPayload<{ include: { product: true } }>;
+interface SaleWithProduct {
+  id: string;
+  productId: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+  note: string | null;
+  date: Date;
+  createdAt: Date;
+  product: ProductItem;
+}
 
 export interface ProductItem {
   id: string;
