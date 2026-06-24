@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { MonthlyChart } from "@/components/dashboard/MonthlyChart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { formatNaira, formatDate, monthLabel } from "@/lib/utils";
 import { AlertTriangle } from "lucide-react";
 
+
+type SaleWithProduct = Prisma.SaleGetPayload<{ include: { product: true } }>;
 
 export interface ProductItem {
   id: string;
@@ -161,7 +164,7 @@ export default async function DashboardPage() {
               </p>
             ) : (
               <div className="space-y-2">
-                {recentSales.map((s) => (
+                {recentSales.map((s: SaleWithProduct) => (
                   <div
                     key={s.id}
                     className="flex justify-between items-center py-1.5 border-b last:border-0"
