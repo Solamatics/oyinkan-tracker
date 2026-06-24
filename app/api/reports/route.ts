@@ -3,6 +3,16 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+interface SaleGroupBy {
+  productId: string;
+  _sum: { total: number | null; quantity: number | null };
+}
+
+interface ExpenseGroupBy {
+  category: string;
+  _sum: { amount: number | null };
+}
+
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session)
@@ -53,7 +63,7 @@ export async function GET(req: NextRequest) {
   });
 
   const products = await prisma.product.findMany({
-    where: { id: { in: salesByProduct.map((s) => s.productId) } },
+    where: { id: { in: (salesByProduct as SaleGroupBy[]).map((s) => s.productId) } },
   });
 
   const months: { year: number; month: number }[] = [];
@@ -104,13 +114,13 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({
     summary,
-    salesByProduct: salesByProduct.map((s) => ({
+    salesByProduct: (salesByProduct as SaleGroupBy[]).map((s) => ({
       productName:
         products.find((p) => p.id === s.productId)?.name ?? "Unknown",
       total: s._sum.total ?? 0,
       quantity: s._sum.quantity ?? 0,
     })),
-    expensesByCategory: expensesByCategory.map((e) => ({
+    expensesByCategory: (expensesByCategory as ExpenseGroupBy[]).map((e) => ({
       category: e.category,
       total: e._sum.amount ?? 0,
     })),
