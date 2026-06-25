@@ -40,7 +40,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
       <div className="w-full max-w-sm">
         <div className="flex items-center justify-center gap-2 mb-8">
-          <Leaf className="h-6 w-6 text-green-600" />
+          {/* <Leaf className="h-6 w-6 text-green-600" /> */}
           <span className="text-xl font-semibold">Oyinkan Tracker</span>
         </div>
 
