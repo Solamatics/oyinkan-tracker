@@ -96,7 +96,7 @@ export default function InventoryPage() {
     <div className="space-y-6">
       <h1 className="text-xl font-semibold">Inventory</h1>
 
-      {/* Update stock form */}
+      {/* Update stock form here */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium">Update stock</CardTitle>
