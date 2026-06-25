@@ -164,7 +164,7 @@ export default function ReportsPage() {
               <Card key={label}>
                 <CardContent className="pt-4 pb-3">
                   <p className="text-xs text-muted-foreground mb-1">{label}</p>
-                  <p className={`text-xl font-semibold tabular-nums ${color ?? ""}`}>
+                  <p className={`text-lg md:text-xl font-semibold tabular-nums ${color ?? ""}`}>
                     {format === "number"
                       ? value.toLocaleString()
                       : formatNaira(value)}

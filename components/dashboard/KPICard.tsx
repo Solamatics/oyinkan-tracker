@@ -31,7 +31,7 @@ export function KPICard({
         <p className="text-xs text-muted-foreground mb-1">{label}</p>
         <p
           className={cn(
-            "text-2xl font-semibold tabular-nums",
+            "text-xl md:text-2xl font-semibold tabular-nums",
             colorize && value > 0 && "text-green-600",
             colorize && value < 0 && "text-red-500"
           )}
