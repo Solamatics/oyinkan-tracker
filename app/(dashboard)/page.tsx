@@ -98,6 +98,9 @@ export default async function DashboardPage() {
 
   const lowStock = products.filter((p: ProductItem) => p.currentStock <= p.lowStockAlert);
 
+  console.log("Products:", products);
+  // console.log("Low stock:", lowStock);
+
   return (
     <div className="space-y-6">
       <div>
