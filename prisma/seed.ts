@@ -16,17 +16,17 @@ async function main() {
 
   const products = [
     {
-      name: "Soursoup Pack (30 bags)",
+      name: "Soursoup Pack",
       unit: "pack",
-      defaultPrice: 5000,
+      defaultPrice: 8000,
       lowStockAlert: 5,
     },
-    { name: "Honey 350g", unit: "jar", defaultPrice: 3500, lowStockAlert: 5 },
-    { name: "Honey 500g", unit: "jar", defaultPrice: 5000, lowStockAlert: 5 },
+    { name: "Honey 350g", unit: "jar", defaultPrice: 5500, lowStockAlert: 5 },
+    { name: "Honey 500g", unit: "jar", defaultPrice: 8000, lowStockAlert: 5 },
     {
       name: "Honey 1 litre",
       unit: "bottle",
-      defaultPrice: 9000,
+      defaultPrice: 16000,
       lowStockAlert: 3,
     },
   ];
