@@ -7,6 +7,9 @@ import { formatNaira, formatDate, monthLabel } from "@/lib/utils";
 import { AlertTriangle } from "lucide-react";
 
 
+export const revalidate = 0;
+
+
 interface SaleWithProduct {
   id: string;
   productId: string;
