@@ -1,3 +1,5 @@
+import { unstable_noStore as noStore } from "next/cache";
+
 import { prisma } from "@/lib/prisma";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { MonthlyChart } from "@/components/dashboard/MonthlyChart";
@@ -35,6 +37,8 @@ export interface ProductItem {
 
 //dashboard data
 async function getDashboardData() {
+  noStore();
+  
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
