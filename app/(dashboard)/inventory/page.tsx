@@ -164,27 +164,29 @@ export default function InventoryPage() {
     }
   }
 
-  async function handleLowAlertChange(id: string, val: string) {
-    const n = Number(val);
-    if (isNaN(n)) return;
-    try {
-      await updateSettings(id, { lowStockAlert: n });
-      toast.success("Alert threshold updated");
-    } catch {
-      toast.error("Failed to update");
-    }
+  async function handleLowAlertChange(id: string, val: string, current: number) {
+  const n = Number(val);
+  if (val.trim() === "" || isNaN(n)) return;
+  if (n === current) return;
+  try {
+    await updateSettings(id, { lowStockAlert: n });
+    toast.success("Alert threshold updated");
+  } catch {
+    toast.error("Failed to update");
   }
+}
 
-  async function handleDefaultPriceChange(id: string, val: string) {
-    const n = Number(val);
-    if (isNaN(n)) return;
-    try {
-      await updateSettings(id, { defaultPrice: n });
-      toast.success("Default price updated");
-    } catch {
-      toast.error("Failed to update");
-    }
+async function handleDefaultPriceChange(id: string, val: string, current: number) {
+  const n = Number(val);
+  if (val.trim() === "" || isNaN(n)) return;
+  if (n === current) return;
+  try {
+    await updateSettings(id, { defaultPrice: n });
+    toast.success("Default price updated");
+  } catch {
+    toast.error("Failed to update");
   }
+}
 
   return (
     <>
@@ -415,9 +417,7 @@ export default function InventoryPage() {
                           min="0"
                           defaultValue={p.lowStockAlert}
                           className="h-8 text-xs"
-                          onBlur={(e) =>
-                            handleLowAlertChange(p.id, e.target.value)
-                          }
+                           onBlur={(e) => handleLowAlertChange(p.id, e.target.value, p.lowStockAlert)}
                         />
                       </div>
                       <div className="space-y-1">
@@ -427,9 +427,7 @@ export default function InventoryPage() {
                           min="0"
                           defaultValue={p.defaultPrice}
                           className="h-8 text-xs"
-                          onBlur={(e) =>
-                            handleDefaultPriceChange(p.id, e.target.value)
-                          }
+                          onBlur={(e) => handleDefaultPriceChange(p.id, e.target.value, p.defaultPrice)}
                         />
                       </div>
                     </div>
