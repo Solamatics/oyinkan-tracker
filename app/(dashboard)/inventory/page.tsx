@@ -64,6 +64,8 @@ export default function InventoryPage() {
     deleteProduct,
   } = useInventoryStore();
 
+  console.log("products", products);
+
   const [selectedId, setSelectedId] = useState("");
   const [action, setAction] = useState<"add" | "set">("add");
   const [quantity, setQuantity] = useState("1");
