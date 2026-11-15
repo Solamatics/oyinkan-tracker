@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatNaira, formatDate, monthLabel } from "@/lib/utils";
 import { AlertTriangle } from "lucide-react";
+import { console } from "inspector";
 
 
 export const revalidate = 0;
@@ -31,6 +32,7 @@ export interface ProductItem {
   defaultPrice: number;
   lowStockAlert: number;
   currentStock: number;
+  isActive: boolean;
   createdAt: Date;
 }
 
@@ -93,6 +95,9 @@ export default async function DashboardPage() {
   const { current, previous, products, recentSales, last6Months } =
     await getDashboardData();
 
+
+    console.log("Products:", products);
+
   const now = new Date();
   const label = monthLabel(now.getFullYear(), now.getMonth() + 1);
 
@@ -103,7 +108,11 @@ export default async function DashboardPage() {
     totalSales: 0,
   };
 
-  const lowStock = products.filter((p: ProductItem) => p.currentStock <= p.lowStockAlert);
+  const activeProducts = products.filter((p: ProductItem) => p.isActive);
+  console.log("Active Products:", activeProducts);
+  const lowStock = activeProducts.filter(
+    (p: ProductItem) => p.currentStock <= p.lowStockAlert,
+  );
 
   console.log("Products:", products);
   // console.log("Low stock:", lowStock);
@@ -212,7 +221,7 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {products.map((p: ProductItem) => {
+              {activeProducts.map((p: ProductItem) => {
                 const status =
                   p.currentStock === 0
                     ? "out"

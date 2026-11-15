@@ -64,26 +64,65 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { productId, quantity, unitPrice, note, date } = body;
 
-  if (!productId || !quantity || !unitPrice || !date) {
+  if (!productId || !date) {
     return NextResponse.json(
       { error: "Missing required fields" },
       { status: 400 },
     );
   }
 
+  if (typeof quantity !== "number" || !Number.isInteger(quantity) || quantity < 1)
+    return NextResponse.json(
+      { error: "Sale quantity must be a positive whole number" },
+      { status: 400 },
+    );
+  if (typeof unitPrice !== "number" || !Number.isFinite(unitPrice) || unitPrice < 0)
+    return NextResponse.json(
+      { error: "Unit price must be a non-negative number" },
+      { status: 400 },
+    );
+
   const total = quantity * unitPrice;
   const saleDate = new Date(date);
 
-  const [sale] = await prisma.$transaction([
-    prisma.sale.create({
+  const result = await prisma.$transaction(async (tx) => {
+    const product = await tx.product.findUnique({
+      where: { id: productId },
+      select: { isActive: true },
+    });
+    if (!product)
+      return { error: "Product not found", status: 404 as const };
+    if (!product.isActive)
+      return {
+        error: "Archived products cannot be used for new sales",
+        status: 409 as const,
+      };
+
+    const stockUpdate = await tx.product.updateMany({
+      where: { id: productId, isActive: true, currentStock: { gte: quantity } },
+      data: { currentStock: { decrement: quantity } },
+    });
+
+    if (stockUpdate.count === 0) {
+      const currentProduct = await tx.product.findUnique({
+        where: { id: productId },
+        select: { isActive: true },
+      });
+      if (!currentProduct)
+        return { error: "Product not found", status: 404 as const };
+      if (!currentProduct.isActive)
+        return {
+          error: "Archived products cannot be used for new sales",
+          status: 409 as const,
+        };
+      return { error: "Insufficient stock", status: 409 as const };
+    }
+
+    const sale = await tx.sale.create({
       data: { productId, quantity, unitPrice, total, note, date: saleDate },
       include: { product: true },
-    }),
-    prisma.product.update({
-      where: { id: productId },
-      data: { currentStock: { decrement: quantity } },
-    }),
-    prisma.stockMovement.create({
+    });
+    await tx.stockMovement.create({
       data: {
         productId,
         type: "sale",
@@ -91,12 +130,20 @@ export async function POST(req: NextRequest) {
         note: note || "Sale recorded",
         date: saleDate,
       },
-    }),
-  ]);
+    });
 
-  await upsertMonthlySummary(saleDate, total, 1);
+    return { sale };
+  });
 
-  return NextResponse.json(sale, { status: 201 });
+  if ("error" in result)
+    return NextResponse.json(
+      { error: result.error },
+      { status: result.status },
+    );
+
+  await upsertMonthlySummary(saleDate, result.sale.total, 1);
+
+  return NextResponse.json(result.sale, { status: 201 });
 }
 
 export async function DELETE(req: NextRequest) {

@@ -14,10 +14,19 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { formatNaira, formatDate } from "@/lib/utils";
-import { Loader2, RefreshCw } from "lucide-react";
+import { formatDate } from "@/lib/utils";
+import {
+  Archive,
+  ArchiveRestore,
+  Loader2,
+  Plus,
+  RefreshCw,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Product } from "@/types";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+
 
 function StockBadge({ product }: { product: Product }) {
   if (product.currentStock === 0)
@@ -36,14 +45,31 @@ function StockBadge({ product }: { product: Product }) {
 }
 
 export default function InventoryPage() {
-  const { products, loading, fetchProducts, updateStock, updateSettings } =
-    useInventoryStore();
+  const {
+    products,
+    loading,
+    fetchProducts,
+    updateStock,
+    updateSettings,
+    createProduct,
+    setProductArchived,
+    deleteProduct,
+  } = useInventoryStore();
 
   const [selectedId, setSelectedId] = useState("");
   const [action, setAction] = useState<"add" | "set">("add");
   const [quantity, setQuantity] = useState("1");
   const [cost, setCost] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [creatingProduct, setCreatingProduct] = useState(false);
+  const [newProductName, setNewProductName] = useState("");
+  const [newProductUnit, setNewProductUnit] = useState("");
+  const [newProductPrice, setNewProductPrice] = useState("0");
+  const [newProductLowStockAlert, setNewProductLowStockAlert] = useState("5");
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [productToArchive, setProductToArchive] = useState<Product | null>(null);
+  const [deleting, setDeleting] = useState(false);
+ const [archiving, setArchiving] = useState(false);
 
   useEffect(() => {
     fetchProducts(true);
@@ -70,6 +96,58 @@ export default function InventoryPage() {
     }
   }
 
+  async function handleCreateProduct(e: React.FormEvent) {
+    e.preventDefault();
+    setCreatingProduct(true);
+    try {
+      await createProduct({
+        name: newProductName.trim(),
+        unit: newProductUnit.trim(),
+        defaultPrice: Number(newProductPrice),
+        quantity: Number(quantity),
+        lowStockAlert: Number(newProductLowStockAlert),
+      });
+      toast.success("Product added");
+      setNewProductName("");
+      setNewProductUnit("");
+      setNewProductPrice("0");
+      setNewProductLowStockAlert("5");
+      setQuantity("1");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to add product");
+    } finally {
+      setCreatingProduct(false);
+    }
+  }
+
+  async function confirmArchiveProduct() {
+    if (!productToArchive) return;
+    setArchiving(true);
+    try {
+      await setProductArchived(productToArchive.id, true);
+      toast.success("Product archived");
+      setProductToArchive(null);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to archive product");
+    } finally {
+      setArchiving(false);
+    }
+  }
+
+  async function confirmDeleteProduct() {
+  if (!productToDelete) return;
+  setDeleting(true);
+  try {
+    await deleteProduct(productToDelete.id);
+    toast.success("Product deleted");
+    setProductToDelete(null);
+  } catch (err) {
+    toast.error(err instanceof Error ? err.message : "Failed to delete product");
+  } finally {
+    setDeleting(false);
+  }
+}
+
   async function handleLowAlertChange(id: string, val: string) {
     const n = Number(val);
     if (isNaN(n)) return;
@@ -93,8 +171,86 @@ export default function InventoryPage() {
   }
 
   return (
+    <>
     <div className="space-y-6">
       <h1 className="text-xl font-semibold">Inventory</h1>
+
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-medium">Add product</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleCreateProduct} className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="new-product-name">Product name</Label>
+                <Input
+                  id="new-product-name"
+                  value={newProductName}
+                  onChange={(e) => setNewProductName(e.target.value)}
+                  required
+                  maxLength={100}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="new-product-unit">Unit</Label>
+                <Input
+                  id="new-product-unit"
+                  placeholder="e.g. jar, pack, bottle"
+                  value={newProductUnit}
+                  onChange={(e) => setNewProductUnit(e.target.value)}
+                  required
+                  maxLength={40}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="new-product-price">Default price (₦)</Label>
+                <Input
+                  id="new-product-price"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={newProductPrice}
+                  onChange={(e) => setNewProductPrice(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="new-product-quantity">Quantity</Label>
+                <Input
+                  id="new-product-quantity"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="new-product-low-stock">Low stock alert at</Label>
+                <Input
+                  id="new-product-low-stock"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={newProductLowStockAlert}
+                  onChange={(e) => setNewProductLowStockAlert(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+            <Button type="submit" disabled={creatingProduct} size="sm">
+              {creatingProduct ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Plus className="mr-2 h-4 w-4" />
+              )}
+              Add product
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
 
       {/* Update stock form here */}
       <Card>
@@ -111,7 +267,7 @@ export default function InventoryPage() {
                     <SelectValue placeholder="Select product" />
                   </SelectTrigger>
                   <SelectContent>
-                    {products.map((p) => (
+                    {products.filter((p) => p.isActive).map((p) => (
                       <SelectItem key={p.id} value={p.id}>
                         {p.name}
                       </SelectItem>
@@ -140,7 +296,7 @@ export default function InventoryPage() {
                 <Label>Quantity</Label>
                 <Input
                   type="number"
-                  min="1"
+                  min={action === "set" ? "0" : "1"}
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
                   required
@@ -188,39 +344,74 @@ export default function InventoryPage() {
                       per {p.unit}
                     </p>
                   </div>
-                  <StockBadge product={p} />
+                  <div className="flex items-center gap-2">
+                    {p.isActive ? (
+                      <StockBadge product={p} />
+                    ) : (
+                      <Badge variant="secondary">Archived</Badge>
+                    )}
+                    {p._count?.sales || p._count?.stockMovements ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon-sm"
+                        title={p.isActive ? "Archive product" : "Restore product"}
+                        aria-label={p.isActive ? "Archive product" : "Restore product"}
+                        onClick={() => setProductToArchive(p)}
+                      >
+                        {p.isActive ? <Archive /> : <ArchiveRestore />}
+                      </Button>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon-sm"
+                        title="Delete product"
+                        aria-label="Delete product"
+                        onClick={() => setProductToDelete(p)}
+                      >
+                        <Trash2 />
+                      </Button>
+                    )}
+                  </div>
                 </div>
 
                 <p className="text-3xl font-semibold tabular-nums mb-4">
                   {p.currentStock}
                 </p>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <Label className="text-xs">Low stock alert at</Label>
-                    <Input
-                      type="number"
-                      min="0"
-                      defaultValue={p.lowStockAlert}
-                      className="h-8 text-xs"
-                      onBlur={(e) =>
-                        handleLowAlertChange(p.id, e.target.value)
-                      }
-                    />
+                {p.isActive ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <Label className="text-xs">Low stock alert at</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        defaultValue={p.lowStockAlert}
+                        className="h-8 text-xs"
+                        onBlur={(e) =>
+                          handleLowAlertChange(p.id, e.target.value)
+                        }
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Default price (₦)</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        defaultValue={p.defaultPrice}
+                        className="h-8 text-xs"
+                        onBlur={(e) =>
+                          handleDefaultPriceChange(p.id, e.target.value)
+                        }
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Default price (₦)</Label>
-                    <Input
-                      type="number"
-                      min="0"
-                      defaultValue={p.defaultPrice}
-                      className="h-8 text-xs"
-                      onBlur={(e) =>
-                        handleDefaultPriceChange(p.id, e.target.value)
-                      }
-                    />
-                  </div>
-                </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    Archived products are unavailable for new sales and stock updates.
+                  </p>
+                )}
 
                 {/* Stock movement log */}
                 {p.stockMovements && p.stockMovements.length > 0 && (
@@ -268,5 +459,59 @@ export default function InventoryPage() {
         </div>
       )}
     </div>
+
+    <AlertDialog
+      open={productToDelete !== null}
+      onOpenChange={(open) => {
+        if (!open) setProductToDelete(null);
+      }}
+    >
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Delete &quot;{productToDelete?.name}&quot;?</AlertDialogTitle>
+        <AlertDialogDescription>
+          This cannot be undone. Products with sales or stock history cannot be
+          deleted.
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+        <AlertDialogAction
+          onClick={confirmDeleteProduct}
+          disabled={deleting}
+          className="bg-destructive text-white hover:bg-destructive/90"
+        >
+          {deleting ? "Deleting..." : "Delete"}
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+    </AlertDialog>
+
+    <AlertDialog
+      open={productToArchive !== null}
+      onOpenChange={(open) => {
+        if (!open) setProductToArchive(null);
+      }}
+    >
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Archive &quot;{productToArchive?.name}&quot;?</AlertDialogTitle>
+      <AlertDialogDescription>
+        This cannot be undone. Archived products will be moved to the archive section.
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel disabled={archiving}>Cancel</AlertDialogCancel>
+      <AlertDialogAction
+        onClick={confirmArchiveProduct}
+        disabled={archiving}
+        className="bg-destructive text-white hover:bg-destructive/90"
+      >
+        {archiving ? "Archiving..." : "Archive"}
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }

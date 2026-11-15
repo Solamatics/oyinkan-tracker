@@ -5,8 +5,10 @@ export interface Product {
   defaultPrice: number;
   lowStockAlert: number;
   currentStock: number;
+  isActive: boolean;
   createdAt: string;
   stockMovements?: StockMovement[];
+  _count?: { sales: number; stockMovements: number };
 }
 
 export interface Sale {

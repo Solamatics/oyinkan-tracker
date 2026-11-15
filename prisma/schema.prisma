@@ -24,6 +24,7 @@ model Product {
   defaultPrice   Float           @default(0)
   lowStockAlert  Int             @default(5)
   currentStock   Int             @default(0)
+  isActive       Boolean         @default(true)
   createdAt      DateTime        @default(now())
   sales          Sale[]
   stockMovements StockMovement[]
