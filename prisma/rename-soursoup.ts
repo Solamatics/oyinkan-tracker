@@ -9,8 +9,12 @@ async function main() {
   const oldName = "Soursoup Pack (30 bags)";
   const newName = "Soursoup Pack";
 
-  const oldProduct = await prisma.product.findUnique({ where: { name: oldName } });
-  const newProduct = await prisma.product.findUnique({ where: { name: newName } });
+  const oldProduct = await prisma.product.findUnique({
+    where: { name: oldName },
+  });
+  const newProduct = await prisma.product.findUnique({
+    where: { name: newName },
+  });
 
   if (!oldProduct) {
     console.log(`"${oldName}" not found — nothing to migrate.`);
@@ -28,7 +32,9 @@ async function main() {
   }
 
   // Both exist — move all relations from old to new, then delete old
-  console.log(`Both products exist. Migrating relations from "${oldName}" to "${newName}"...`);
+  console.log(
+    `Both products exist. Migrating relations from "${oldName}" to "${newName}"...`,
+  );
 
   const [salesMoved, movementsMoved] = await prisma.$transaction([
     prisma.sale.updateMany({
@@ -41,7 +47,9 @@ async function main() {
     }),
   ]);
 
-  console.log(`  Moved ${salesMoved.count} sales, ${movementsMoved.count} stock movements`);
+  console.log(
+    `  Moved ${salesMoved.count} sales, ${movementsMoved.count} stock movements`,
+  );
 
   await prisma.product.delete({ where: { id: oldProduct.id } });
   console.log(`✅ Deleted old "${oldName}" product. Done.`);

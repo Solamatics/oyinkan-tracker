@@ -22,7 +22,7 @@ const chartConfig = {
 
 function shortMonth(year: number, month: number) {
   return new Intl.DateTimeFormat("en-NG", { month: "short" }).format(
-    new Date(year, month - 1)
+    new Date(year, month - 1),
   );
 }
 
@@ -61,9 +61,24 @@ export function MonthlyChart({ data }: MonthlyChartProps) {
         />
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
-        <Bar dataKey="totalRevenue" fill="hsl(142 76% 36%)" radius={[4, 4, 0, 0]} maxBarSize={28} />
-        <Bar dataKey="totalExpense" fill="hsl(0 84% 60%)" radius={[4, 4, 0, 0]} maxBarSize={28} />
-        <Bar dataKey="netProfit" fill="hsl(221 83% 53%)" radius={[4, 4, 0, 0]} maxBarSize={28} />
+        <Bar
+          dataKey="totalRevenue"
+          fill="hsl(142 76% 36%)"
+          radius={[4, 4, 0, 0]}
+          maxBarSize={28}
+        />
+        <Bar
+          dataKey="totalExpense"
+          fill="hsl(0 84% 60%)"
+          radius={[4, 4, 0, 0]}
+          maxBarSize={28}
+        />
+        <Bar
+          dataKey="netProfit"
+          fill="hsl(221 83% 53%)"
+          radius={[4, 4, 0, 0]}
+          maxBarSize={28}
+        />
       </BarChart>
     </ChartContainer>
   );

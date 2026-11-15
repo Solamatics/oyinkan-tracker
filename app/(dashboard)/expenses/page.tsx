@@ -64,7 +64,7 @@ export default function ExpensesPage() {
       setAmount("");
       setDate(todayStr());
     } catch (err) {
-     toast.error(err instanceof Error ? err.message : "Failed to record sale");
+      toast.error(err instanceof Error ? err.message : "Failed to record sale");
     } finally {
       setSubmitting(false);
     }
@@ -89,11 +89,13 @@ export default function ExpensesPage() {
       {/* Form */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium">Record an expense</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            Record an expense
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <div className="space-y-1.5">
                 <Label>Category</Label>
                 <Select value={category} onValueChange={setCategory}>
@@ -158,10 +160,12 @@ export default function ExpensesPage() {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <CardTitle className="text-sm font-medium">Expenses history</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Expenses history
+            </CardTitle>
             <div className="flex flex-wrap gap-2">
               <Select value={filterCategory} onValueChange={setFilterCategory}>
-                <SelectTrigger className="w-44 h-8 text-xs">
+                <SelectTrigger className="h-8 w-44 text-xs">
                   <SelectValue placeholder="All categories" />
                 </SelectTrigger>
                 <SelectContent>
@@ -177,7 +181,7 @@ export default function ExpensesPage() {
                 type="month"
                 value={filterMonth}
                 onChange={(e) => setFilterMonth(e.target.value)}
-                className="w-36 h-8 text-xs"
+                className="h-8 w-36 text-xs"
               />
             </div>
           </div>
@@ -185,10 +189,10 @@ export default function ExpensesPage() {
         <CardContent>
           {loading ? (
             <div className="flex justify-center py-8">
-              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              <Loader2 className="text-muted-foreground h-5 w-5 animate-spin" />
             </div>
           ) : expenses.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">
+            <p className="text-muted-foreground py-8 text-center text-sm">
               No expenses found
             </p>
           ) : (
@@ -197,35 +201,43 @@ export default function ExpensesPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left font-medium text-muted-foreground pb-2 pr-4">Date</th>
-                      <th className="text-left font-medium text-muted-foreground pb-2 pr-4">Category</th>
-                      <th className="text-left font-medium text-muted-foreground pb-2 pr-4">Description</th>
-                      <th className="text-right font-medium text-muted-foreground pb-2 pr-4">Amount</th>
+                      <th className="text-muted-foreground pr-4 pb-2 text-left font-medium">
+                        Date
+                      </th>
+                      <th className="text-muted-foreground pr-4 pb-2 text-left font-medium">
+                        Category
+                      </th>
+                      <th className="text-muted-foreground pr-4 pb-2 text-left font-medium">
+                        Description
+                      </th>
+                      <th className="text-muted-foreground pr-4 pb-2 text-right font-medium">
+                        Amount
+                      </th>
                       <th className="pb-2"></th>
                     </tr>
                   </thead>
                   <tbody>
                     {expenses.map((e) => (
                       <tr key={e.id} className="border-b last:border-0">
-                        <td className="py-2.5 pr-4 text-muted-foreground">
+                        <td className="text-muted-foreground py-2.5 pr-4">
                           {formatDate(e.date)}
                         </td>
                         <td className="py-2.5 pr-4">
-                          <span className="text-xs bg-secondary px-2 py-0.5 rounded-full">
+                          <span className="bg-secondary rounded-full px-2 py-0.5 text-xs">
                             {e.category}
                           </span>
                         </td>
-                        <td className="py-2.5 pr-4 text-muted-foreground">
+                        <td className="text-muted-foreground py-2.5 pr-4">
                           {e.description || "—"}
                         </td>
-                        <td className="py-2.5 pr-4 text-right tabular-nums font-medium text-red-500">
+                        <td className="py-2.5 pr-4 text-right font-medium text-red-500 tabular-nums">
                           {formatNaira(e.amount)}
                         </td>
                         <td className="py-2.5">
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                            className="text-muted-foreground hover:text-destructive h-7 w-7"
                             onClick={() => handleDelete(e.id)}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -236,7 +248,7 @@ export default function ExpensesPage() {
                   </tbody>
                 </table>
               </div>
-              <div className="text-right text-sm font-medium pt-3 border-t mt-2">
+              <div className="mt-2 border-t pt-3 text-right text-sm font-medium">
                 Total:{" "}
                 <span className="text-red-500">{formatNaira(total)}</span>
               </div>

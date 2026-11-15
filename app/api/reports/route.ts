@@ -63,7 +63,9 @@ export async function GET(req: NextRequest) {
   });
 
   const products = await prisma.product.findMany({
-    where: { id: { in: (salesByProduct as SaleGroupBy[]).map((s) => s.productId) } },
+    where: {
+      id: { in: (salesByProduct as SaleGroupBy[]).map((s) => s.productId) },
+    },
   });
 
   const months: { year: number; month: number }[] = [];
@@ -116,7 +118,8 @@ export async function GET(req: NextRequest) {
     summary,
     salesByProduct: (salesByProduct as SaleGroupBy[]).map((s) => ({
       productName:
-        products.find((p: { id: string }) => p.id === s.productId)?.name ?? "Unknown",
+        products.find((p: { id: string }) => p.id === s.productId)?.name ??
+        "Unknown",
       total: s._sum.total ?? 0,
       quantity: s._sum.quantity ?? 0,
     })),

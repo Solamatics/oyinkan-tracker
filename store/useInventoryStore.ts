@@ -115,8 +115,7 @@ export const useInventoryStore = create<InventoryState>((set) => ({
   deleteProduct: async (id) => {
     const res = await fetch(`/api/inventory/${id}`, { method: "DELETE" });
     const result: { error?: string } = await res.json();
-    if (!res.ok)
-      throw new Error(result.error ?? "Failed to delete product");
+    if (!res.ok) throw new Error(result.error ?? "Failed to delete product");
 
     set((s) => ({ products: s.products.filter((p) => p.id !== id) }));
   },

@@ -35,7 +35,6 @@ export default function SalesPage() {
     setFilterMonth,
   } = useSalesStore();
 
-
   const { products, fetchProducts } = useInventoryStore();
 
   const [productId, setProductId] = useState("");
@@ -112,7 +111,7 @@ export default function SalesPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <div className="space-y-1.5">
                 <Label>Product</Label>
                 <Select value={productId} onValueChange={handleProductChange}>
@@ -120,11 +119,13 @@ export default function SalesPage() {
                     <SelectValue placeholder="Select product" />
                   </SelectTrigger>
                   <SelectContent>
-                    {products.filter((p) => p.isActive).map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.name}
-                      </SelectItem>
-                    ))}
+                    {products
+                      .filter((p) => p.isActive)
+                      .map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -162,7 +163,7 @@ export default function SalesPage() {
               </div>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label>Date</Label>
                 <Input
@@ -201,7 +202,7 @@ export default function SalesPage() {
             <CardTitle className="text-sm font-medium">Sales history</CardTitle>
             <div className="flex flex-wrap gap-2">
               <Select value={filterProduct} onValueChange={setFilterProduct}>
-                <SelectTrigger className="w-44 h-8 text-xs">
+                <SelectTrigger className="h-8 w-44 text-xs">
                   <SelectValue placeholder="All products" />
                 </SelectTrigger>
                 <SelectContent>
@@ -217,7 +218,7 @@ export default function SalesPage() {
                 type="month"
                 value={filterMonth}
                 onChange={(e) => setFilterMonth(e.target.value)}
-                className="w-36 h-8 text-xs"
+                className="h-8 w-36 text-xs"
               />
             </div>
           </div>
@@ -225,10 +226,10 @@ export default function SalesPage() {
         <CardContent>
           {loading ? (
             <div className="flex justify-center py-8">
-              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              <Loader2 className="text-muted-foreground h-5 w-5 animate-spin" />
             </div>
           ) : sales.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">
+            <p className="text-muted-foreground py-8 text-center text-sm">
               No sales found
             </p>
           ) : (
@@ -237,18 +238,28 @@ export default function SalesPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left font-medium text-muted-foreground pb-2 pr-4">Date</th>
-                      <th className="text-left font-medium text-muted-foreground pb-2 pr-4">Product</th>
-                      <th className="text-right font-medium text-muted-foreground pb-2 pr-4">Qty</th>
-                      <th className="text-right font-medium text-muted-foreground pb-2 pr-4">Price</th>
-                      <th className="text-right font-medium text-muted-foreground pb-2 pr-4">Total</th>
+                      <th className="text-muted-foreground pr-4 pb-2 text-left font-medium">
+                        Date
+                      </th>
+                      <th className="text-muted-foreground pr-4 pb-2 text-left font-medium">
+                        Product
+                      </th>
+                      <th className="text-muted-foreground pr-4 pb-2 text-right font-medium">
+                        Qty
+                      </th>
+                      <th className="text-muted-foreground pr-4 pb-2 text-right font-medium">
+                        Price
+                      </th>
+                      <th className="text-muted-foreground pr-4 pb-2 text-right font-medium">
+                        Total
+                      </th>
                       <th className="pb-2"></th>
                     </tr>
                   </thead>
                   <tbody>
                     {sales.map((s) => (
                       <tr key={s.id} className="border-b last:border-0">
-                        <td className="py-2.5 pr-4 text-muted-foreground">
+                        <td className="text-muted-foreground py-2.5 pr-4">
                           {formatDate(s.date)}
                         </td>
                         <td className="py-2.5 pr-4">{s.product.name}</td>
@@ -258,14 +269,14 @@ export default function SalesPage() {
                         <td className="py-2.5 pr-4 text-right tabular-nums">
                           {formatNaira(s.unitPrice)}
                         </td>
-                        <td className="py-2.5 pr-4 text-right tabular-nums font-medium text-green-600">
+                        <td className="py-2.5 pr-4 text-right font-medium text-green-600 tabular-nums">
                           {formatNaira(s.total)}
                         </td>
                         <td className="py-2.5">
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                            className="text-muted-foreground hover:text-destructive h-7 w-7"
                             onClick={() => handleDelete(s.id)}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -276,7 +287,7 @@ export default function SalesPage() {
                   </tbody>
                 </table>
               </div>
-              <div className="text-right text-sm font-medium pt-3 border-t mt-2">
+              <div className="mt-2 border-t pt-3 text-right text-sm font-medium">
                 Total: {formatNaira(totalAmount)}
               </div>
             </>

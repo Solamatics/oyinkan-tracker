@@ -66,7 +66,11 @@ export async function POST(req: NextRequest) {
       { status: 400 },
     );
 
-  if (typeof quantity !== "number" || !Number.isInteger(quantity) || quantity < 0)
+  if (
+    typeof quantity !== "number" ||
+    !Number.isInteger(quantity) ||
+    quantity < 0
+  )
     return NextResponse.json(
       { error: "Initial quantity must be a non-negative whole number" },
       { status: 400 },

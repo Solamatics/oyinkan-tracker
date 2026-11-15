@@ -71,12 +71,20 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  if (typeof quantity !== "number" || !Number.isInteger(quantity) || quantity < 1)
+  if (
+    typeof quantity !== "number" ||
+    !Number.isInteger(quantity) ||
+    quantity < 1
+  )
     return NextResponse.json(
       { error: "Sale quantity must be a positive whole number" },
       { status: 400 },
     );
-  if (typeof unitPrice !== "number" || !Number.isFinite(unitPrice) || unitPrice < 0)
+  if (
+    typeof unitPrice !== "number" ||
+    !Number.isFinite(unitPrice) ||
+    unitPrice < 0
+  )
     return NextResponse.json(
       { error: "Unit price must be a non-negative number" },
       { status: 400 },
@@ -90,8 +98,7 @@ export async function POST(req: NextRequest) {
       where: { id: productId },
       select: { isActive: true },
     });
-    if (!product)
-      return { error: "Product not found", status: 404 as const };
+    if (!product) return { error: "Product not found", status: 404 as const };
     if (!product.isActive)
       return {
         error: "Archived products cannot be used for new sales",

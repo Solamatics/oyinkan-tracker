@@ -29,13 +29,13 @@ export function Sidebar() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex flex-col w-56 shrink-0 border-r bg-background h-screen sticky top-0">
-        <div className="flex items-center gap-2.5 px-5 py-5 border-b">
+      <aside className="bg-background sticky top-0 hidden h-screen w-56 shrink-0 flex-col border-r md:flex">
+        <div className="flex items-center gap-2.5 border-b px-5 py-5">
           <Leaf className="h-5 w-5 text-green-600" />
-          <span className="font-semibold text-sm">Oyinkan Tracker</span>
+          <span className="text-sm font-semibold">Oyinkan Tracker</span>
         </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
+        <nav className="flex-1 space-y-0.5 px-3 py-4">
           {navItems.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;
             return (
@@ -43,10 +43,10 @@ export function Sidebar() {
                 key={href}
                 href={href}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors",
+                  "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
                   active
                     ? "bg-primary text-primary-foreground font-medium"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -56,11 +56,11 @@ export function Sidebar() {
           })}
         </nav>
 
-        <div className="px-3 py-4 border-t">
+        <div className="border-t px-3 py-4">
           <Button
             variant="ghost"
             size="sm"
-            className="w-full justify-start gap-3 text-muted-foreground text-sm"
+            className="text-muted-foreground w-full justify-start gap-3 text-sm"
             onClick={() => signOut({ callbackUrl: "/login" })}
           >
             <LogOut className="h-4 w-4" />
@@ -70,15 +70,15 @@ export function Sidebar() {
       </aside>
 
       {/* Mobile top bar */}
-      <header className="md:hidden fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-4 border-b bg-background">
+      <header className="bg-background fixed top-0 right-0 left-0 z-50 flex h-14 items-center justify-between border-b px-4 md:hidden">
         <div className="flex items-center gap-2">
           <Leaf className="h-4 w-4 text-green-600" />
-          <span className="font-semibold text-sm">Oyinkan Tracker</span>
+          <span className="text-sm font-semibold">Oyinkan Tracker</span>
         </div>
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 text-muted-foreground"
+          className="text-muted-foreground h-8 w-8"
           onClick={() => signOut({ callbackUrl: "/login" })}
         >
           <LogOut className="h-4 w-4" />
@@ -86,7 +86,7 @@ export function Sidebar() {
       </header>
 
       {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 h-16 border-t bg-background flex items-stretch">
+      <nav className="bg-background fixed right-0 bottom-0 left-0 z-50 flex h-16 items-stretch border-t md:hidden">
         {navItems.map(({ href, label, icon: Icon }) => {
           const active = pathname === href;
           return (
@@ -94,8 +94,8 @@ export function Sidebar() {
               key={href}
               href={href}
               className={cn(
-                "flex-1 flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors",
-                active ? "text-primary" : "text-muted-foreground"
+                "flex flex-1 flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors",
+                active ? "text-primary" : "text-muted-foreground",
               )}
             >
               <Icon className="h-5 w-5" />

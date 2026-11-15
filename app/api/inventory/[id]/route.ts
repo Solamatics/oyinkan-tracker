@@ -129,7 +129,9 @@ export async function PATCH(
         { status: 409 },
       );
     return NextResponse.json(
-      { error: "Current stock is below zero; set a corrected stock count first" },
+      {
+        error: "Current stock is below zero; set a corrected stock count first",
+      },
       { status: 409 },
     );
   }

@@ -9,9 +9,7 @@ import { formatNaira, formatDate, monthLabel } from "@/lib/utils";
 import { AlertTriangle } from "lucide-react";
 import { console } from "inspector";
 
-
 export const revalidate = 0;
-
 
 interface SaleWithProduct {
   id: string;
@@ -36,11 +34,10 @@ export interface ProductItem {
   createdAt: Date;
 }
 
-
 //dashboard data
 async function getDashboardData() {
   noStore();
-  
+
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
@@ -50,7 +47,9 @@ async function getDashboardData() {
   const prevMonth = prevDate.getMonth() + 1;
 
   const [current, previous, products, recentSales] = await Promise.all([
-    prisma.monthlySummary.findUnique({ where: { year_month: { year, month } } }),
+    prisma.monthlySummary.findUnique({
+      where: { year_month: { year, month } },
+    }),
     prisma.monthlySummary.findUnique({
       where: { year_month: { year: prevYear, month: prevMonth } },
     }),
@@ -85,7 +84,7 @@ async function getDashboardData() {
           updatedAt: new Date(),
         }
       );
-    })
+    }),
   );
 
   return { current, previous, products, recentSales, last6Months };
@@ -95,8 +94,7 @@ export default async function DashboardPage() {
   const { current, previous, products, recentSales, last6Months } =
     await getDashboardData();
 
-
-    console.log("Products:", products);
+  console.log("Products:", products);
 
   const now = new Date();
   const label = monthLabel(now.getFullYear(), now.getMonth() + 1);
@@ -121,7 +119,7 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold">Dashboard</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">{label}</p>
+        <p className="text-muted-foreground mt-0.5 text-sm">{label}</p>
       </div>
 
       {/* Low stock alerts here */}
@@ -130,12 +128,14 @@ export default async function DashboardPage() {
           {lowStock.map((p: ProductItem) => (
             <div
               key={p.id}
-              className="flex items-center gap-1.5 text-xs bg-amber-50 border border-amber-200 text-amber-800 rounded-md px-3 py-1.5"
+              className="flex items-center gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs text-amber-800"
             >
               <AlertTriangle className="h-3 w-3" />
               <span>
                 {p.name} —{" "}
-                {p.currentStock === 0 ? "out of stock" : `${p.currentStock} left`}
+                {p.currentStock === 0
+                  ? "out of stock"
+                  : `${p.currentStock} left`}
               </span>
             </div>
           ))}
@@ -143,7 +143,7 @@ export default async function DashboardPage() {
       )}
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <KPICard
           label="Revenue"
           value={cur.totalRevenue}
@@ -179,7 +179,7 @@ export default async function DashboardPage() {
         </CardContent>
       </Card>
 
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid gap-4 md:grid-cols-2">
         {/* Recent sales */}
         <Card>
           <CardHeader className="pb-2">
@@ -187,7 +187,7 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             {recentSales.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4 text-center">
+              <p className="text-muted-foreground py-4 text-center text-sm">
                 No sales yet
               </p>
             ) : (
@@ -195,11 +195,11 @@ export default async function DashboardPage() {
                 {recentSales.map((s: SaleWithProduct) => (
                   <div
                     key={s.id}
-                    className="flex justify-between items-center py-1.5 border-b last:border-0"
+                    className="flex items-center justify-between border-b py-1.5 last:border-0"
                   >
                     <div>
                       <p className="text-xs font-medium">{s.product.name}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-muted-foreground text-xs">
                         {s.quantity} × {formatNaira(s.unitPrice)} ·{" "}
                         {formatDate(s.date)}
                       </p>
@@ -226,12 +226,12 @@ export default async function DashboardPage() {
                   p.currentStock === 0
                     ? "out"
                     : p.currentStock <= p.lowStockAlert
-                    ? "low"
-                    : "ok";
+                      ? "low"
+                      : "ok";
                 return (
                   <div
                     key={p.id}
-                    className="flex items-center justify-between py-1.5 border-b last:border-0"
+                    className="flex items-center justify-between border-b py-1.5 last:border-0"
                   >
                     <p className="text-sm">{p.name}</p>
                     <div className="flex items-center gap-2">
@@ -244,11 +244,15 @@ export default async function DashboardPage() {
                           status === "low"
                             ? "bg-amber-100 text-amber-800 hover:bg-amber-100"
                             : status === "ok"
-                            ? "bg-green-100 text-green-800 hover:bg-green-100"
-                            : ""
+                              ? "bg-green-100 text-green-800 hover:bg-green-100"
+                              : ""
                         }
                       >
-                        {status === "out" ? "Out" : status === "low" ? "Low" : "OK"}
+                        {status === "out"
+                          ? "Out"
+                          : status === "low"
+                            ? "Low"
+                            : "OK"}
                       </Badge>
                     </div>
                   </div>

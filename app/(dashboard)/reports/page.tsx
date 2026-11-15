@@ -7,7 +7,13 @@ import { Input } from "@/components/ui/input";
 import { MonthlyChart } from "@/components/dashboard/MonthlyChart";
 import { formatNaira, monthLabel, percentChange } from "@/lib/utils";
 import { ReportData } from "@/types";
-import { Loader2, Download, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import {
+  Loader2,
+  Download,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+} from "lucide-react";
 import { toast } from "sonner";
 
 function ChangeChip({
@@ -20,7 +26,7 @@ function ChangeChip({
   if (previous === undefined) return null;
   const change = percentChange(current, previous);
   if (change === null)
-    return <span className="text-xs text-muted-foreground">—</span>;
+    return <span className="text-muted-foreground text-xs">—</span>;
   const pos = change > 0;
   const neg = change < 0;
   return (
@@ -103,14 +109,14 @@ export default function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-xl font-semibold">Reports</h1>
         <div className="flex items-center gap-2">
           <Input
             type="month"
             value={monthValue}
             onChange={(e) => handleMonthChange(e.target.value)}
-            className="w-40 h-9"
+            className="h-9 w-40"
           />
           <Button
             variant="outline"
@@ -126,12 +132,12 @@ export default function ReportsPage() {
 
       {loading || !data ? (
         <div className="flex justify-center py-16">
-          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+          <Loader2 className="text-muted-foreground h-5 w-5 animate-spin" />
         </div>
       ) : (
         <>
           {/* KPIs */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             {[
               {
                 label: "Revenue",
@@ -163,15 +169,17 @@ export default function ReportsPage() {
             ].map(({ label, value, prev: p, color, format }) => (
               <Card key={label}>
                 <CardContent className="pt-4 pb-3">
-                  <p className="text-xs text-muted-foreground mb-1">{label}</p>
-                  <p className={`text-lg md:text-xl font-semibold tabular-nums ${color ?? ""}`}>
+                  <p className="text-muted-foreground mb-1 text-xs">{label}</p>
+                  <p
+                    className={`text-lg font-semibold tabular-nums md:text-xl ${color ?? ""}`}
+                  >
                     {format === "number"
                       ? value.toLocaleString()
                       : formatNaira(value)}
                   </p>
-                  <div className="flex items-center gap-1 mt-1">
+                  <div className="mt-1 flex items-center gap-1">
                     <ChangeChip current={value} previous={p} />
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-muted-foreground text-xs">
                       vs prev month
                     </span>
                   </div>
@@ -192,7 +200,7 @@ export default function ReportsPage() {
             </CardContent>
           </Card>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid gap-4 md:grid-cols-2">
             {/* Revenue by product */}
             <Card>
               <CardHeader className="pb-2">
@@ -202,7 +210,7 @@ export default function ReportsPage() {
               </CardHeader>
               <CardContent>
                 {data.salesByProduct.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-4">
+                  <p className="text-muted-foreground py-4 text-center text-sm">
                     No sales this month
                   </p>
                 ) : (
@@ -213,17 +221,17 @@ export default function ReportsPage() {
                         const pct =
                           data.summary.totalRevenue > 0
                             ? Math.round(
-                                (s.total / data.summary.totalRevenue) * 100
+                                (s.total / data.summary.totalRevenue) * 100,
                               )
                             : 0;
                         return (
                           <div key={s.productName}>
-                            <div className="flex justify-between text-sm mb-1">
+                            <div className="mb-1 flex justify-between text-sm">
                               <span className="text-muted-foreground truncate pr-2">
                                 {s.productName}
                               </span>
-                              <div className="flex items-center gap-2 shrink-0">
-                                <span className="text-xs text-muted-foreground">
+                              <div className="flex shrink-0 items-center gap-2">
+                                <span className="text-muted-foreground text-xs">
                                   {s.quantity} units
                                 </span>
                                 <span className="font-medium">
@@ -231,9 +239,9 @@ export default function ReportsPage() {
                                 </span>
                               </div>
                             </div>
-                            <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                            <div className="bg-muted h-1.5 overflow-hidden rounded-full">
                               <div
-                                className="h-full bg-green-500 rounded-full"
+                                className="h-full rounded-full bg-green-500"
                                 style={{ width: `${pct}%` }}
                               />
                             </div>
@@ -254,7 +262,7 @@ export default function ReportsPage() {
               </CardHeader>
               <CardContent>
                 {data.expensesByCategory.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-4">
+                  <p className="text-muted-foreground py-4 text-center text-sm">
                     No expenses this month
                   </p>
                 ) : (
@@ -265,22 +273,22 @@ export default function ReportsPage() {
                         const pct =
                           data.summary.totalExpense > 0
                             ? Math.round(
-                                (e.total / data.summary.totalExpense) * 100
+                                (e.total / data.summary.totalExpense) * 100,
                               )
                             : 0;
                         return (
                           <div key={e.category}>
-                            <div className="flex justify-between text-sm mb-1">
+                            <div className="mb-1 flex justify-between text-sm">
                               <span className="text-muted-foreground truncate pr-2">
                                 {e.category}
                               </span>
-                              <span className="font-medium shrink-0">
+                              <span className="shrink-0 font-medium">
                                 {formatNaira(e.total)}
                               </span>
                             </div>
-                            <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                            <div className="bg-muted h-1.5 overflow-hidden rounded-full">
                               <div
-                                className="h-full bg-red-400 rounded-full"
+                                className="h-full rounded-full bg-red-400"
                                 style={{ width: `${pct}%` }}
                               />
                             </div>
